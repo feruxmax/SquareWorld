@@ -10,19 +10,8 @@ namespace SquareWorld.Frontend
 {
     class GL4Frontend : GameWindow, IFrontend
     {
-        enum VaoIds : int { Triangles, NumVao };
-        enum BufferIds : int  { ArrayBufers, NumBuffers };
-        enum AttribIds : int { vPosition = 0 };
-
-        //
-        private readonly GameObjectRenderer _gameObjectRenderer;
+        private  GameObjectRenderer _gameObjectRenderer;
         private readonly Game  _game;
-        //
-
-        private int[] _vao = new int[(int)VaoIds.NumVao];
-        private int[] _buffers = new int[(int)BufferIds.NumBuffers];
-
-        private const int NumVertices = 6;
 
         public GL4Frontend(Game game)
             : base(
@@ -43,32 +32,11 @@ namespace SquareWorld.Frontend
         {
             base.OnLoad(e);
 
-            var vertices = new float[NumVertices * 2]
-            {
-                -0.90f, -0.90f, // Triangle 1
-                +0.85f, -0.90f,
-                -0.90f, +0.85f,
-                +0.90f, -0.85f, // Triangle 2
-                +0.90f, +0.90f,
-                -0.85f, +0.90f,
-            };
-
-            GL.CreateVertexArrays(n: (int)VaoIds.NumVao, arrays: _vao);
-
-            GL.CreateBuffers(n: (int)BufferIds.NumBuffers, buffers: _buffers);
-            GL.NamedBufferStorage(_buffers[(int)BufferIds.ArrayBufers],
-                NumVertices*2*4, vertices, flags: 0);
-
             var program = CompileShaders();
             GL.UseProgram(program);
-            
-            GL.BindVertexArray(_vao[(int)VaoIds.Triangles]);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _buffers[(int)BufferIds.ArrayBufers]);
-            GL.VertexAttribPointer((int)AttribIds.vPosition, 2, 
-                VertexAttribPointerType.Float, normalized: false, stride: 0, offset: 0);
-            GL.EnableVertexAttribArray((int)AttribIds.vPosition);
 
-            //
+            _gameObjectRenderer = new GameObjectRenderer();
+
             GL.ClearColor(Color.Azure);
         }
 
@@ -94,9 +62,8 @@ namespace SquareWorld.Frontend
             base.OnRenderFrame(e);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.BindVertexArray(_vao[(int)VaoIds.Triangles]);
 
-            GL.DrawArrays(PrimitiveType.Triangles, first:0, count: NumVertices);
+            _gameObjectRenderer.Render();
 
             SwapBuffers();
         }

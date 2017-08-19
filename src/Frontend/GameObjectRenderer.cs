@@ -28,23 +28,15 @@ namespace SquareWorld.Frontend
             };
 
             _vao = GL.GenVertexArray();
-            _buffer = GL.GenBuffer();
-
             GL.BindVertexArray(_vao);
+
+            _buffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer);
             GL.NamedBufferStorage(_buffer, NumVertices*NumDimensions*sizeof(float), vertices, flags: 0);
 
-            GL.VertexArrayAttribBinding(_vao, (int)AttribIds.vPosition, 0);
-            GL.EnableVertexArrayAttrib(_vao, (int)AttribIds.vPosition);
-            GL.VertexArrayAttribFormat(
-                _vao,
-                (int)AttribIds.vPosition,
-                size: NumDimensions,
-                type: VertexAttribType.Float,
-                normalized: false,
-                relativeoffset: 0);
-
-            GL.VertexArrayVertexBuffer(_vao, 0, _buffer, offset:IntPtr.Zero, stride:0);
+            GL.VertexAttribPointer((int)AttribIds.vPosition, size:NumDimensions, 
+                type: VertexAttribPointerType.Float, normalized: false, stride: 0, offset: 0);
+            GL.EnableVertexAttribArray((int)AttribIds.vPosition);
 
             _initialized = true;
         }
