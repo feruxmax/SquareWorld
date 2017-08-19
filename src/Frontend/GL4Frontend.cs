@@ -10,6 +10,8 @@ namespace SquareWorld.Frontend
 {
     class GL4Frontend : GameWindow, IFrontend
     {
+        private int _program;
+        private Matrix4 _model; 
         private  GameObjectRenderer _gameObjectRenderer;
         private readonly Game  _game;
 
@@ -26,17 +28,19 @@ namespace SquareWorld.Frontend
                 GraphicsContextFlags.ForwardCompatible)
         {
             _game = game;
+            _model = Matrix4.CreateScale(1.0f/game.WorldSize, 1.0f/game.WorldSize, 1.0f/game.WorldSize);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            var program = CompileShaders();
-            GL.UseProgram(program);
+            _program = CompileShaders();
+            GL.UseProgram(_program);
 
             _gameObjectRenderer = new GameObjectRenderer();
 
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.ClearColor(Color.Azure);
         }
 
@@ -63,6 +67,8 @@ namespace SquareWorld.Frontend
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            var modelLoc = GL.GetUniformLocation(_program, "model");
+            GL.UniformMatrix4(modelLoc, transpose: false, matrix: ref _model);
             _gameObjectRenderer.Render();
 
             SwapBuffers();
@@ -74,10 +80,13 @@ namespace SquareWorld.Frontend
             var vertexShaderStr = 
             @"#version 420 core
             layout(location = 0) in vec4 vPosition;
+
+            uniform mat4 model;
+
             void
             main()
             {
-                gl_Position = vPosition;
+                gl_Position = model * vPosition;
             }";
             GL.ShaderSource(vertexShader, vertexShaderStr);
             GL.CompileShader(vertexShader);

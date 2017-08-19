@@ -7,9 +7,12 @@ namespace SquareWorld.Engine
     {
         private readonly World _world;
 
+        public int WorldSize { get; }
+
         public Game()
         {
-            _world = new World(10);
+            WorldSize = 10;
+            _world = new World(WorldSize);
         }
 
         public void Draw(GameObjectRenderer drawer)

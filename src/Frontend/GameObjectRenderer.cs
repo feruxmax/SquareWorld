@@ -19,12 +19,12 @@ namespace SquareWorld.Frontend
         {
             var vertices = new float[NumVertices * NumDimensions]
             {
-                -0.90f, -0.90f, // Triangle 1
-                +0.85f, -0.90f,
-                -0.90f, +0.85f,
-                +0.90f, -0.85f, // Triangle 2
-                +0.90f, +0.90f,
-                -0.85f, +0.90f,
+                1.0f,  1.0f, // Triangle 1
+                1.0f, -1.0f,
+               -1.0f,  1.0f,
+                1.0f, -1.0f, // Triangle 2
+               -1.0f, -1.0f,
+               -1.0f,  1.0f,
             };
 
             _vao = GL.GenVertexArray();
