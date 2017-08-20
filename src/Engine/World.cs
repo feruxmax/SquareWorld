@@ -17,24 +17,24 @@ namespace SquareWorld.Engine
             gameObjects = new IGameObject[size, size];
 
             for (int i = 0; i < size; i++)
+            {
                 for (int j = 0; j < size; j++)
                 {
-                    if(i != size/2 || j != size/2)
-                        gameObjects[i, j] = gameObjectsFactory.CreateVoid(i, j);
-                    else
-                    {
-                        hero = gameObjectsFactory.CreateHero(i, j);
-                        gameObjects[i, j] = hero;
-                    }
+                    gameObjects[i, j] = gameObjectsFactory.CreateVoid(i, j);
                 }
-            
+            }
+
+            hero = gameObjectsFactory.CreateHero(size/2, size/2);
         }
 
         public void Render()
         {
             foreach(var gameObject in gameObjects)
             {
-                gameObject.Render();
+                if(gameObject.Position != hero.Position)
+                    gameObject.Render();
+                else
+                    hero.Render();
             }
         }
 
@@ -43,7 +43,7 @@ namespace SquareWorld.Engine
             switch(action)
             {
                 case Actions.Up:
-                    if (hero.Position.Y < _size)
+                    if (hero.Position.Y + 1 < _size)
                     {
                         var position = hero.Position;
                         position.Y++;
@@ -51,7 +51,7 @@ namespace SquareWorld.Engine
                     }
                     break;
                 case Actions.Down:
-                    if (hero.Position.Y > 0)
+                    if (hero.Position.Y - 1 >= 0)
                     {
                         var position = hero.Position;
                         position.Y--;
@@ -59,7 +59,7 @@ namespace SquareWorld.Engine
                     }
                     break;
                 case Actions.Left:
-                    if (hero.Position.X > 0)
+                    if (hero.Position.X - 1 >= 0)
                     {
                         var position = hero.Position;
                         position.X--;
@@ -67,7 +67,7 @@ namespace SquareWorld.Engine
                     }
                     break;
                 case Actions.Right:
-                    if (hero.Position.X < _size)
+                    if (hero.Position.X + 1 < _size)
                     {
                         var position = hero.Position;
                         position.X++;
