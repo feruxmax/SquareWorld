@@ -10,6 +10,7 @@ namespace SquareWorld.Frontend
 {
     class GL4Frontend : GameWindow, IFrontend
     {
+        private static readonly string _title = "Square Game";
         private int _program;
         private  GameObjectRenderer _gameObjectRenderer;
         private readonly Game  _game;
@@ -21,7 +22,7 @@ namespace SquareWorld.Frontend
                 512,
                 512,
                 GraphicsMode.Default,
-                "Square Game",
+                _title,
                 GameWindowFlags.Default,
                 DisplayDevice.Default,
                 4,
@@ -47,7 +48,6 @@ namespace SquareWorld.Frontend
             _gameObjectRenderer = new GameObjectRenderer(modelLoc, model);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            GL.ClearColor(Color.Azure);
         }
 
         protected override void OnResize(EventArgs e)
@@ -67,9 +67,11 @@ namespace SquareWorld.Frontend
             }
         }
 
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
+            UpdateTitleFps(e.Time);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -80,6 +82,23 @@ namespace SquareWorld.Frontend
             _game.Render(_gameObjectRenderer);
 
             SwapBuffers();
+        }
+
+        private double summFps = 0;
+        private int summ = 0;
+
+        void UpdateTitleFps(double time)
+        {
+            if (summ++ == 60)
+            {
+                Title = $"{_title}: (Vsync: {VSync}) FPS: {summFps / 60:N1}";
+                summ = 1;
+                summFps = 1f / time;
+            }
+            else
+            {
+                summFps += 1f / time;
+            }
         }
 
         private int CompileShaders()
