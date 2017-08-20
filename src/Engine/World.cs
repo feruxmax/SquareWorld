@@ -26,11 +26,11 @@ namespace SquareWorld.Engine
             
         }
 
-        public void Draw(GameObjectRenderer drawer)
+        public void Render(GameObjectRenderer renderer)
         {
             foreach(var gameObject in gameObjects)
             {
-                gameObject.Draw(drawer);
+                gameObject.Render(renderer);
             }
         }
     }

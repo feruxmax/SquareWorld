@@ -15,9 +15,9 @@ namespace SquareWorld.Engine
             _world = new World(WorldSize);
         }
 
-        public void Draw(GameObjectRenderer drawer)
+        public void Render(GameObjectRenderer renderer)
         {
-            _world.Draw(drawer);
+            _world.Render(renderer);
         }
     }
 }

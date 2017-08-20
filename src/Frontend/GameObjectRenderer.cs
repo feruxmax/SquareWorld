@@ -41,17 +41,12 @@ namespace SquareWorld.Frontend
             _initialized = true;
         }
 
-        public void Render()
+        public void Render(int type, int x, int y)
         {
             GL.BindVertexArray(_vao);
             GL.DrawArrays(PrimitiveType.Triangles, first:0, count: NumVertices);
         }
 
-        public void Draw(int type, int x, int y)
-        {
-
-        }
-        
         public void Dispose() 
         {
             Dispose(true);

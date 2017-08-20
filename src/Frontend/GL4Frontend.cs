@@ -69,7 +69,7 @@ namespace SquareWorld.Frontend
 
             var modelLoc = GL.GetUniformLocation(_program, "model");
             GL.UniformMatrix4(modelLoc, transpose: false, matrix: ref _model);
-            _gameObjectRenderer.Render();
+            _gameObjectRenderer.Render(0, 1, 1);
 
             SwapBuffers();
         }

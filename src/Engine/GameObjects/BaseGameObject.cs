@@ -13,6 +13,6 @@ namespace SquareWorld.Engine.GameObjects
             Position = position;
         }
 
-        public abstract void Draw(GameObjectRenderer renderer);
+        public abstract void Render(GameObjectRenderer renderer);
     }
 }

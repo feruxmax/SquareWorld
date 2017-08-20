@@ -8,6 +8,6 @@ namespace SquareWorld.Engine.GameObjects
     {
         Point Position { get; set; }
 
-        void Draw(GameObjectRenderer drawer);
+        void Render(GameObjectRenderer renderer);
     }
 }

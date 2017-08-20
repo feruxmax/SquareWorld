@@ -16,9 +16,9 @@ namespace SquareWorld.Engine.GameObjects
         {
         }
 
-        public override void Draw(GameObjectRenderer drawer)
+        public override void Render(GameObjectRenderer renderer)
         {
-            drawer.Draw(0, Position.X, Position.Y);
+            renderer.Render(0, Position.X, Position.Y);
         }
     }
 }
