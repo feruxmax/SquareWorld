@@ -1,23 +1,28 @@
 using System;
 using SquareWorld.Frontend;
+using SquareWorld.Frontend.GameObjects;
 
 namespace SquareWorld.Engine
 {
     public class Game 
     {
-        private readonly World _world;
+        private World _world;
 
         public int WorldSize { get; }
 
         public Game()
         {
             WorldSize = 10;
-            _world = new World(WorldSize);
         }
 
-        public void Render(GameObjectRenderer renderer)
+        public void BuildWorld(GameObjectsFactory gameObjectsFactory)
         {
-            _world.Render(renderer);
+            _world = new World(gameObjectsFactory, WorldSize);
+        }
+
+        public void Render()
+        {
+            _world.Render();
         }
     }
 }

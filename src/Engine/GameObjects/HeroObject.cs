@@ -1,23 +1,23 @@
 using System;
-using SquareWorld.Frontend;
+using SquareWorld.Frontend.GameObjects;
 using SquareWorld.Engine.Models;
 
 namespace SquareWorld.Engine.GameObjects
 {
     public class HeroObject : BaseGameObject 
     {
-        public HeroObject(int x, int y)
-            : this(new Point(x, y))
+        public HeroObject(int x, int y, GameObjectRenderer renderer)
+            : this(new Point(x, y), renderer)
         {
         }
-        public HeroObject(Point position)
-            : base(position)
+        public HeroObject(Point position, GameObjectRenderer renderer)
+            : base(position, renderer)
         {
         }
         
-        public override void Render(GameObjectRenderer renderer)
+        public override void Render()
         {
-            renderer.Render(0, Position.X, Position.Y);
+            _renderer.Render(Position.X, Position.Y);
         }
     }
 }

@@ -3,7 +3,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 
-namespace SquareWorld.Frontend
+namespace SquareWorld.Frontend.GameObjects
 {
     public class GameObjectRenderer : IDisposable
     {
@@ -13,22 +13,25 @@ namespace SquareWorld.Frontend
 
         //
         private readonly TextureLoader textureLoader = new TextureLoader();
-        //
+        private readonly int _program;
+        private readonly string _textureFileName;
 
+        //
         private int _vao;
         private int _buffer;
         private bool _initialized;
+        private  int _texture;
+        private int _modelLoc;
 
-        private int _texture;
-
-        //
-        private int _modelMatrixLocation;
-        private Matrix4 _modelMatrix;
-
-        public GameObjectRenderer(int modelMatrixLocation, Matrix4 modelMatrix)
+        protected GameObjectRenderer(int program, string textureFileName)
         {
-            _modelMatrixLocation = modelMatrixLocation;
-            _modelMatrix = modelMatrix;
+            _program = program;
+            _textureFileName = textureFileName;
+        }
+
+        public void Load()
+        {
+            _modelLoc = GL.GetUniformLocation(_program, "model");
 
             var vertices = new float[NumVertices * NumDimensions * 2]
             {
@@ -59,15 +62,15 @@ namespace SquareWorld.Frontend
 
             GL.BindVertexArray(0); // Unbind VAO
 
-            _texture = LoadTexture();
+            _texture = LoadTexture(_textureFileName);
 
             _initialized = true;
         }
 
-        public void Render(int type, int x, int y)
+        public void Render(int x, int y)
         {
-            var model = Matrix4.CreateTranslation(x, y, 0) * _modelMatrix;
-            GL.UniformMatrix4(_modelMatrixLocation, transpose: false, matrix: ref model);
+            var model = Matrix4.CreateTranslation(x, y, 0.0f);
+            GL.UniformMatrix4(_modelLoc, transpose: false, matrix: ref model);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture: _texture);
@@ -96,14 +99,14 @@ namespace SquareWorld.Frontend
             }
         }
 
-        private int LoadTexture()
+        private int LoadTexture(string name)
         {
             int width, height;
-            var data = textureLoader.Load(out width, out height);
+            var data = textureLoader.Load(name, out width, out height);
 
             int texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture);
-            
+
             GL.TexImage2D(
                 TextureTarget.Texture2D,
                 0,                          // leverl

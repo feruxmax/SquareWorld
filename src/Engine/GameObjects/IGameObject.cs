@@ -1,5 +1,5 @@
 using System;
-using SquareWorld.Frontend;
+using SquareWorld.Frontend.GameObjects;
 using SquareWorld.Engine.Models;
 
 namespace SquareWorld.Engine.GameObjects
@@ -8,6 +8,6 @@ namespace SquareWorld.Engine.GameObjects
     {
         Point Position { get; set; }
 
-        void Render(GameObjectRenderer renderer);
+        void Render();
     }
 }

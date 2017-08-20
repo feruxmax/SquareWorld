@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using SquareWorld.Engine;
+using SquareWorld.Frontend.GameObjects;
 
 namespace SquareWorld.Frontend
 {
@@ -12,11 +14,14 @@ namespace SquareWorld.Frontend
     {
         private static readonly string _title = "Square Game";
         private int _program;
-        private  GameObjectRenderer _gameObjectRenderer;
-        private readonly Game  _game;
+        private readonly Game _game;
+        private List<GameObjectRenderer> _gameObjectRenderers = new List<GameObjectRenderer>();
         private int _viewLoc;
+        private int _scaleLoc;
         private Matrix4 _view;
+        private Matrix4 _scale;
 
+        public GameObjectsFactory GameObjectsFactory {get; private set;}
         public GL4Frontend(Game game)
             : base(
                 512,
@@ -30,22 +35,24 @@ namespace SquareWorld.Frontend
                 GraphicsContextFlags.ForwardCompatible)
         {
             _game = game;
+            _program = CompileShaders();
+            GameObjectsFactory = new GameObjectsFactory(_program);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            _program = CompileShaders();
             GL.UseProgram(_program);
 
-            var modelLoc = GL.GetUniformLocation(_program, "model");
+            _scaleLoc = GL.GetUniformLocation(_program, "scale");
             _viewLoc = GL.GetUniformLocation(_program, "view");
-            var model = Matrix4.CreateScale(1.0f/(_game.WorldSize/2), 1.0f/(_game.WorldSize/2), 1.0f);
+            _scale = Matrix4.CreateScale(1.0f/(_game.WorldSize/2), 1.0f/(_game.WorldSize/2), 1.0f);
             // Move (0, 0) to left bottom corner of camera view
             _view = Matrix4.CreateTranslation(-1, -1, 0.0f);
 
-            _gameObjectRenderer = new GameObjectRenderer(modelLoc, model);
+            _gameObjectRenderers.AddRange(GameObjectsFactory.Renderers);
+            _gameObjectRenderers.ForEach(r => r.Load());
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         }
@@ -67,7 +74,6 @@ namespace SquareWorld.Frontend
             }
         }
 
-
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
@@ -76,10 +82,11 @@ namespace SquareWorld.Frontend
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.UniformMatrix4(_viewLoc, transpose: false, matrix: ref _view);
+            GL.UniformMatrix4(_scaleLoc, transpose: false, matrix: ref _scale);
 
             //_gameObjectRenderer.Render(0, 1, 1);
             //_gameObjectRenderer.Render(0, 0, 0);
-            _game.Render(_gameObjectRenderer);
+            _game.Render();
 
             SwapBuffers();
         }
@@ -111,6 +118,7 @@ namespace SquareWorld.Frontend
 
             out vec2 vs_textureCoordinate;
 
+            uniform mat4 scale;
             uniform mat4 model;
             uniform mat4 view;
 
@@ -118,7 +126,7 @@ namespace SquareWorld.Frontend
             main()
             {
                 vs_textureCoordinate = textureCoordinate;
-                gl_Position = view * model * vec4(vPosition, 0.0f, 1.0f);
+                gl_Position = view * scale * model * vec4(vPosition, 0.0f, 1.0f);
             }";
             GL.ShaderSource(vertexShader, vertexShaderStr);
             GL.CompileShader(vertexShader);

@@ -12,6 +12,7 @@ namespace SquareWorld
             var game = new Game();
             using (IFrontend frontend = new GL4Frontend(game))
             {
+                game.BuildWorld(frontend.GameObjectsFactory);
                 frontend.Run(60.0);
             }
         }
