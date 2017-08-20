@@ -1,17 +1,20 @@
 using System;
 using ImageSharp;
+using ImageSharp.Processing;
 
 namespace SquareWorld.Frontend
 {
     public class TextureLoader
     {
-        public float[] Load(out int Width, out int Height)
+        public float[] Load(string name, out int Width, out int Height)
         {
-            using (Image<Rgba32> image = Image.Load("void.png"))
+            using (Image<Rgba32> image = Image.Load(name))
             {
                 Width = image.Width;
                 Height = image.Height;
                 float[] rc = new float[Width*Height*sizeof(float)];
+
+                image.Flip(FlipType.Vertical);
 
                 for (int i = 0; i < Width*Height; i++)
                 {
