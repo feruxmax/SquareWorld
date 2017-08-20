@@ -11,9 +11,10 @@ namespace SquareWorld.Frontend
     class GL4Frontend : GameWindow, IFrontend
     {
         private int _program;
-        private Matrix4 _model; 
         private  GameObjectRenderer _gameObjectRenderer;
         private readonly Game  _game;
+        private int _viewLoc;
+        private Matrix4 _view;
 
         public GL4Frontend(Game game)
             : base(
@@ -28,7 +29,6 @@ namespace SquareWorld.Frontend
                 GraphicsContextFlags.ForwardCompatible)
         {
             _game = game;
-            _model = Matrix4.CreateScale(1.0f/game.WorldSize, 1.0f/game.WorldSize, 1.0f/game.WorldSize);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -38,7 +38,13 @@ namespace SquareWorld.Frontend
             _program = CompileShaders();
             GL.UseProgram(_program);
 
-            _gameObjectRenderer = new GameObjectRenderer();
+            var modelLoc = GL.GetUniformLocation(_program, "model");
+            _viewLoc = GL.GetUniformLocation(_program, "view");
+            var model = Matrix4.CreateScale(1.0f/(_game.WorldSize/2), 1.0f/(_game.WorldSize/2), 1.0f);
+            // Move (0, 0) to left bottom corner of camera view
+            _view = Matrix4.CreateTranslation(-1, -1, 0.0f);
+
+            _gameObjectRenderer = new GameObjectRenderer(modelLoc, model);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.ClearColor(Color.Azure);
@@ -67,9 +73,11 @@ namespace SquareWorld.Frontend
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            var modelLoc = GL.GetUniformLocation(_program, "model");
-            GL.UniformMatrix4(modelLoc, transpose: false, matrix: ref _model);
-            _gameObjectRenderer.Render(0, 1, 1);
+            GL.UniformMatrix4(_viewLoc, transpose: false, matrix: ref _view);
+
+            //_gameObjectRenderer.Render(0, 1, 1);
+            //_gameObjectRenderer.Render(0, 0, 1);
+            _game.Render(_gameObjectRenderer);
 
             SwapBuffers();
         }
@@ -82,11 +90,12 @@ namespace SquareWorld.Frontend
             layout(location = 0) in vec4 vPosition;
 
             uniform mat4 model;
+            uniform mat4 view;
 
             void
             main()
             {
-                gl_Position = model * vPosition;
+                gl_Position = view * model * vPosition;
             }";
             GL.ShaderSource(vertexShader, vertexShaderStr);
             GL.CompileShader(vertexShader);
