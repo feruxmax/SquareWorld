@@ -6,5 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OpenTK.NETCore" Version="*"/>
+    <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00182"/>
   </ItemGroup>
 </Project>

@@ -47,7 +47,7 @@ namespace SquareWorld.Frontend
 
             _gameObjectRenderer = new GameObjectRenderer(modelLoc, model);
 
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         }
 
         protected override void OnResize(EventArgs e)
@@ -78,7 +78,7 @@ namespace SquareWorld.Frontend
             GL.UniformMatrix4(_viewLoc, transpose: false, matrix: ref _view);
 
             //_gameObjectRenderer.Render(0, 1, 1);
-            //_gameObjectRenderer.Render(0, 0, 1);
+            //_gameObjectRenderer.Render(0, 0, 0);
             _game.Render(_gameObjectRenderer);
 
             SwapBuffers();
@@ -106,7 +106,10 @@ namespace SquareWorld.Frontend
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
             var vertexShaderStr = 
             @"#version 420 core
-            layout(location = 0) in vec4 vPosition;
+            layout(location = 0) in vec2 vPosition;
+            layout(location = 1) in vec2 textureCoordinate;
+
+            out vec2 vs_textureCoordinate;
 
             uniform mat4 model;
             uniform mat4 view;
@@ -114,7 +117,8 @@ namespace SquareWorld.Frontend
             void
             main()
             {
-                gl_Position = view * model * vPosition;
+                vs_textureCoordinate = textureCoordinate;
+                gl_Position = view * model * vec4(vPosition, 0.0f, 1.0f);
             }";
             GL.ShaderSource(vertexShader, vertexShaderStr);
             GL.CompileShader(vertexShader);
@@ -122,11 +126,14 @@ namespace SquareWorld.Frontend
             var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             var fragmentShaderStr = 
             @"#version 420 core
-            out vec4 fColor;
+            in vec2 vs_textureCoordinate;
+            uniform sampler2D textureObject;
+            out vec4 color;
             void
             main()
             {
-                fColor = vec4(0.5, 0.4, 0.8, 1.0);
+                //color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+                color = texture(textureObject, vs_textureCoordinate);
             }";
             GL.ShaderSource(fragmentShader, fragmentShaderStr);
             GL.CompileShader(fragmentShader);
