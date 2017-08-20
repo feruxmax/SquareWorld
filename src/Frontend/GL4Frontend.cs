@@ -6,6 +6,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using SquareWorld.Engine;
+using SquareWorld.Engine.Enums;
 using SquareWorld.Frontend.GameObjects;
 
 namespace SquareWorld.Frontend
@@ -22,6 +23,7 @@ namespace SquareWorld.Frontend
         private Matrix4 _scale;
 
         public GameObjectsFactory GameObjectsFactory {get; private set;}
+
         public GL4Frontend(Game game)
             : base(
                 512,
@@ -64,6 +66,8 @@ namespace SquareWorld.Frontend
             GL.Viewport(0, 0, Width, Height);
         }
 
+        private readonly TimeSpan InputScanTime = TimeSpan.FromMilliseconds(100);
+        private DateTime _lastMeasuredTime = DateTime.UtcNow;
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
@@ -71,6 +75,27 @@ namespace SquareWorld.Frontend
             if (Keyboard[Key.Escape])
             {
                 Exit();
+            }
+
+            if(DateTime.UtcNow - _lastMeasuredTime > InputScanTime)
+            {
+                if (Keyboard[Key.W])
+                {
+                    _game.SendAction(Actions.Up);
+                }
+                if (Keyboard[Key.A])
+                {
+                    _game.SendAction(Actions.Left);
+                }
+                if (Keyboard[Key.S])
+                {
+                    _game.SendAction(Actions.Down);
+                }
+                if (Keyboard[Key.D])
+                {
+                    _game.SendAction(Actions.Right);
+                }
+                _lastMeasuredTime = DateTime.UtcNow;
             }
         }
 

@@ -1,6 +1,7 @@
 using System;
 using SquareWorld.Frontend;
 using SquareWorld.Frontend.GameObjects;
+using SquareWorld.Engine.Enums;
 
 namespace SquareWorld.Engine
 {
@@ -18,6 +19,11 @@ namespace SquareWorld.Engine
         public void BuildWorld(GameObjectsFactory gameObjectsFactory)
         {
             _world = new World(gameObjectsFactory, WorldSize);
+        }
+
+        public void SendAction(Actions action)
+        {
+            _world.HeroAction(action);
         }
 
         public void Render()
