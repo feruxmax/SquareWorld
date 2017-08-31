@@ -6,9 +6,10 @@ namespace SquareWorld.Frontend
 {
     public class TextureLoader
     {
-        public float[] Load(string name, out int Width, out int Height)
+        private const string ResourcesPath = "resources/";
+        public float[] Load(string fileName, out int Width, out int Height)
         {
-            using (Image<Rgba32> image = Image.Load(name))
+            using (Image<Rgba32> image = Image.Load(ResourcesPath + fileName))
             {
                 Width = image.Width;
                 Height = image.Height;
