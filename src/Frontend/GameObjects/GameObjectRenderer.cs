@@ -48,7 +48,7 @@ namespace SquareWorld.Frontend.GameObjects
 
             _buffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer);
-            GL.NamedBufferStorage(_buffer, 2*NumVertices*NumDimensions*sizeof(float), vertices, flags: 0);
+            GL.NamedBufferStorage(_buffer, 2*NumVertices*NumDimensions, vertices, flags: 0);
 
             GL.VertexAttribPointer((int)AttribIds.vPosition, size:NumDimensions, 
                 type: VertexAttribPointerType.Float, normalized: false,
